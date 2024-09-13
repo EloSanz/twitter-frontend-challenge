@@ -119,7 +119,7 @@ const httpRequestService = {
   },
   followUser: async (userId: string) => {
     const res = await axios.post(
-      `${url}/follow/${userId}`,
+      `${url}/follow/follow/${userId}`,
       {},
       {
         headers: {
@@ -127,12 +127,14 @@ const httpRequestService = {
         },
       }
     );
-    if (res.status === 201) {
+    if (res.status === 200) {
       return res.data;
     }
   },
   unfollowUser: async (userId: string) => {
-    const res = await axios.delete(`${url}/follow/${userId}`, {
+    const res = await axios.post(
+      `${url}/follow/unfollow/${userId}`,
+      {},{
       headers: {
         Authorization: localStorage.getItem("token"),
       },
@@ -175,6 +177,7 @@ const httpRequestService = {
       return res.data;
     }
   },
+  
   getPaginatedPostsFromProfile: async (
     limit: number,
     after: string,
@@ -194,18 +197,27 @@ const httpRequestService = {
       return res.data;
     }
   },
-  getPostsFromProfile: async (id: string) => {
+getPostsFromProfile: async (id: string) => {
+  try {
     const res = await axios.get(`${url}/post/by_user/${id}`, {
       headers: {
         Authorization: localStorage.getItem("token"),
       },
     });
 
-    if (res.status === 200) {
-      return res.data;
+    return res.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
+      // El perfil es privado o no se encontraron posts, no mostrar nada en consola
+      console.log("Perfil privado o no se encontraron posts");
+      return null;  // Aquí retornas un valor controlado
     }
-  },
 
+    // Si es otro error, lo manejas y lo lanzas si es necesario
+    console.error("Error al obtener los posts:", error);
+    throw error; // Solo propagas otros errores que no sean 404
+  }
+},
   isLogged: async () => {
     const res = await axios.get(`${url}/user/me`, {
       headers: {

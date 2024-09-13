@@ -3,7 +3,7 @@ import ProfileInfo from "./ProfileInfo";
 import {useNavigate, useParams} from "react-router-dom";
 import Modal from "../../components/modal/Modal";
 import {useTranslation} from "react-i18next";
-import {User} from "../../service";
+import {Author, User} from "../../service";
 import {ButtonType} from "../../components/button/StyledButton";
 import {useHttpRequestService} from "../../service/HttpRequestService";
 import Button from "../../components/button/Button";
@@ -13,7 +13,7 @@ import {StyledH5} from "../../components/common/text";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState<User | null>(null);
-  const [following, setFollowing] = useState<boolean>(false);
+  const [following, setFollowing] = useState<boolean>(true);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [modalValues, setModalValues] = useState({
     text: "",
@@ -23,7 +23,7 @@ const ProfilePage = () => {
   });
   const service = useHttpRequestService()
   const [user, setUser] = useState<User>()
-
+  
   const id = useParams().id;
   const navigate = useNavigate();
 
@@ -32,13 +32,14 @@ const ProfilePage = () => {
 
   useEffect(() => {
     handleGetUser().then(r => setUser(r))
-  }, []);
+  }, [id]);
 
   const handleGetUser = async () => {
     return await service.me()
   }
 
   const handleButtonType = (): { component: ButtonType; text: string } => {
+
     if (profile?.id === user?.id)
       return {component: ButtonType.DELETE, text: t("buttons.delete")};
     if (following)
@@ -53,16 +54,18 @@ const ProfilePage = () => {
         navigate("/sign-in");
       });
     } else {
-      service.unfollowUser(profile!.id).then(async () => {
-        setFollowing(false);
-        setShowModal(false);
-        await getProfileData();
-      });
+        if (profile?.id) {
+          service.unfollowUser(profile.id).then();
+          setShowModal(false);
+          setFollowing(false);
+        }
+
+
     }
   };
 
   useEffect(() => {
-    getProfileData().then();
+    getProfileData().then();    
   }, [id]);
 
   if (!id) return null;
@@ -87,7 +90,8 @@ const ProfilePage = () => {
         });
       } else {
         await service.followUser(id);
-        service.getProfile(id).then((res) => setProfile(res));
+        setFollowing(true);
+        // service.getProfile(id).then((res) => setProfile(res));
       }
       return await getProfileData();
     }
@@ -100,7 +104,7 @@ const ProfilePage = () => {
           setProfile(res);
           setFollowing(
               res
-                  ? res?.followers.some((follower: User) => follower.id === user?.id)
+                  ? res?.followers.some((follower: Author) => follower.id === user?.id)
                   : false
           );
         })

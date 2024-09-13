@@ -22,6 +22,7 @@ export const UserDataBox = ({
 
   return (
     <div className="user-container" onClick={onClick}>
+
       <Avatar
         width={"48px"}
         height={"48px"}
