@@ -1,9 +1,47 @@
 import type { PostData, SingInData, SingUpData } from "./index";
 import axios from "axios";
 import { S3Service } from "./S3Service";
+import { useMutation, useQuery } from "@tanstack/react-query";
+
+
+axios.interceptors.request.use(
+  (config) => {
+    config.headers.Authorization = localStorage.getItem('token')
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+
 
 const url =
-  process.env.REACT_APP_API_URL || "https://twitter-ieea.onrender.com/api";
+  process.env.REACT_APP_API_URL || "http://localhost:8080";
+
+  export const useSignUp = () => {
+    return useMutation({
+      mutationFn: async (formData: Partial<SingUpData>) => await httpRequestService.signUp(formData),
+    });
+  };
+  
+  export const useSignIn = () => {
+      return useMutation({
+        mutationFn: async (formData: SingInData) => await httpRequestService.signIn(formData),
+      })
+  };
+  
+  export const useMe = () => {
+    const { data,error } = useQuery({
+      queryKey: ['user'],
+      queryFn: async () => await httpRequestService.me(),
+      retry: false,
+      refetchOnWindowFocus: false
+    });
+    return {data,error}
+  }
+  
+
 
 const httpRequestService = {
   signUp: async (data: Partial<SingUpData>) => {
@@ -345,7 +383,6 @@ getPostsFromProfile: async (id: string) => {
 
 const useHttpRequestService = () => httpRequestService;
 
-// For class component (remove when unused)
 class HttpService {
   service = httpRequestService;
 }

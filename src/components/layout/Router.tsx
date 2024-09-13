@@ -1,5 +1,5 @@
-import React from "react";
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { createBrowserRouter, Outlet, useNavigate } from "react-router-dom";
 import { StyledSideBarPageWrapper } from "../../pages/side-bar-page/SideBarPageWrapper";
 import NavBar from "../navbar/NavBar";
 import SignUpPage from "../../pages/auth/sign-up/SignUpPage";
@@ -10,13 +10,37 @@ import ProfilePage from "../../pages/profile/ProfilePage";
 import TweetPage from "../../pages/create-tweet-page/TweetPage";
 import CommentPage from "../../pages/create-comment-page/CommentPage";
 import PostPage from "../../pages/post-page/PostPage";
+import { setUser } from "../../redux/user";
+import { useAppDispatch } from "../../redux/hooks";
+import { useMe } from "../../service/HttpRequestService";
 
 const WithNav = () => {
+  const [isLogged, setIsLogged] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const { data, error } = useMe();
+
+  const navigate = useNavigate();
+
+  const checkIsLogged = async () => {
+    dispatch(setUser(data));
+    setIsLogged(true);
+  };
+
+  useEffect(() => {
+    if (error) navigate('sign-in');
+    if(data === undefined) return;
+    checkIsLogged();
+  }, [data, error]);
+
   return (
-    <StyledSideBarPageWrapper>
-      <NavBar />
-      <Outlet />
-    </StyledSideBarPageWrapper>
+    <>
+      {isLogged && (
+        <StyledSideBarPageWrapper>
+          <NavBar />
+          <Outlet />
+        </StyledSideBarPageWrapper>
+      )}
+    </>
   );
 };
 

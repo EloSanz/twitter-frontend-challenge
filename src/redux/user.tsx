@@ -1,18 +1,28 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {LIMIT} from "../util/Constants";
-import {ChatDTO, Post} from "../service";
+import {ChatDTO, Post, User} from "../service";
 
 type InitalStateType = {
   feed: Post[];
   query: string;
   length: number;
   currentChat?: ChatDTO;
+  user: User;
 };
 
 const initialState: InitalStateType = {
   feed: [],
   length: LIMIT,
   query: "",
+  user: {
+    id: '',
+    username: '',
+    private: false,
+    createdAt: new Date(),
+    following: [],
+    followers: [],
+    posts: [],
+  },
 };
 
 const userSlice = createSlice({
@@ -38,10 +48,13 @@ const userSlice = createSlice({
         state.currentChat.messages.push(action.payload);
       }
     },
+    setUser: (state, action) => {
+      state.user = action.payload;
+    },
   },
 });
 
-export const {updateFeed, setLength, setQuery, setChat, addMessage} =
+export const {updateFeed, setLength, setQuery, setChat, addMessage, setUser} =
     userSlice.actions;
 
 export default userSlice.reducer;
