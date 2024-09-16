@@ -42,6 +42,14 @@ export const useGetProfile = (id: string) => {
 
   return { data };
 }
+export const useDeleteProfile = () => {
+  const service = useService();
+
+  return useMutation({
+    mutationFn: async () => await service.deleteProfile(),
+  });
+}
+
 /// Follow Unfollow
 export const useFollowUser = () => {
   const service = useService();
@@ -60,8 +68,6 @@ export const useUnfollowUser = () => {
     mutationFn: async ({ userId }: { userId: string }) => await service.unfollowUser(userId),
   });
 };
-
-
 
 export const useCreatePost = () => {
     const service = useService();
