@@ -1,8 +1,6 @@
 import type { PostData, SingInData, SingUpData } from "./index";
 import axios from "axios";
 import { S3Service } from "./S3Service";
-import { useMutation, useQuery } from "@tanstack/react-query";
-
 
 axios.interceptors.request.use(
   (config) => {
@@ -13,35 +11,13 @@ axios.interceptors.request.use(
     return Promise.reject(error)
   }
 )
-
-
-
 const url =
   process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-  export const useSignUp = () => {
-    return useMutation({
-      mutationFn: async (formData: Partial<SingUpData>) => await httpRequestService.signUp(formData),
-    });
+  export const useService = () => {
+    const service = useHttpRequestService();
+    return service;
   };
-  
-  export const useSignIn = () => {
-      return useMutation({
-        mutationFn: async (formData: SingInData) => await httpRequestService.signIn(formData),
-      })
-  };
-  
-  export const useMe = () => {
-    const { data,error } = useQuery({
-      queryKey: ['user'],
-      queryFn: async () => await httpRequestService.me(),
-      retry: false,
-      refetchOnWindowFocus: false
-    });
-    return {data,error}
-  }
-  
-
 
 const httpRequestService = {
   signUp: async (data: Partial<SingUpData>) => {
@@ -58,6 +34,7 @@ const httpRequestService = {
       return true;
     }
   },
+  
   createPost: async (data: PostData) => {
     const res = await axios.post(`${url}/post`, data, {
       headers: {
@@ -156,10 +133,10 @@ const httpRequestService = {
     }
   },
   followUser: async (userId: string) => {
+    console.log('********************')
     const res = await axios.post(
       `${url}/follow/follow/${userId}`,
-      {},
-      {
+      {},{
         headers: {
           Authorization: localStorage.getItem("token"),
         },
@@ -170,6 +147,7 @@ const httpRequestService = {
     }
   },
   unfollowUser: async (userId: string) => {
+    console.log('********************')
     const res = await axios.post(
       `${url}/follow/unfollow/${userId}`,
       {},{

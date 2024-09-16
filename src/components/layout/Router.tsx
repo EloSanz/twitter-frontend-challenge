@@ -12,7 +12,7 @@ import CommentPage from "../../pages/create-comment-page/CommentPage";
 import PostPage from "../../pages/post-page/PostPage";
 import { setUser } from "../../redux/user";
 import { useAppDispatch } from "../../redux/hooks";
-import { useMe } from "../../service/HttpRequestService";
+import { useMe } from "../../service/queryHooks";
 
 const WithNav = () => {
   const [isLogged, setIsLogged] = useState<boolean>(false);

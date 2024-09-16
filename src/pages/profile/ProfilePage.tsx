@@ -10,6 +10,9 @@ import Button from "../../components/button/Button";
 import ProfileFeed from "../../components/feed/ProfileFeed";
 import {StyledContainer} from "../../components/common/Container";
 import {StyledH5} from "../../components/common/text";
+import { useGetMe } from "../../redux/hooks";
+import { useFollowUser, useGetProfile, useUnfollowUser } from "../../service/queryHooks";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState<User | null>(null);
@@ -21,22 +24,22 @@ const ProfilePage = () => {
     type: ButtonType.DEFAULT,
     buttonText: "",
   });
+
   const service = useHttpRequestService()
-  const [user, setUser] = useState<User>()
-  
+
+  const user = useGetMe();
+  const { mutateAsync: followUser } = useFollowUser();
+  const { mutateAsync: unfollowUser } = useUnfollowUser();
+  const { mutateAsync: deleteProfile } = useDeleteProfile();
   const id = useParams().id;
+  const { data } = useGetProfile(id!);
+  
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const {t} = useTranslation();
 
 
-  useEffect(() => {
-    handleGetUser().then(r => setUser(r))
-  }, [id]);
-
-  const handleGetUser = async () => {
-    return await service.me()
-  }
 
   const handleButtonType = (): { component: ButtonType; text: string } => {
 
@@ -54,19 +57,23 @@ const ProfilePage = () => {
         navigate("/sign-in");
       });
     } else {
-        if (profile?.id) {
-          service.unfollowUser(profile.id).then();
-          setShowModal(false);
-          setFollowing(false);
-        }
-
-
+        await unfollowUser(
+          { userId: profile.id },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries("profile");
+              setFollowing(false);
+              setShowModal(false);
+            },
+          }
+        );
     }
   };
 
   useEffect(() => {
-    getProfileData().then();    
-  }, [id]);
+    getProfileData();
+  }, [id, data]);
+
 
   if (!id) return null;
 
