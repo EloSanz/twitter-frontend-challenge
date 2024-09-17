@@ -20,13 +20,22 @@ const url =
   };
 
 const httpRequestService = {
+
   signUp: async (data: Partial<SingUpData>) => {
-    const res = await axios.post(`${url}/auth/signup`, data);
-    if (res.status === 201) {
-      localStorage.setItem("token", `Bearer ${res.data.token}`);
-      return true;
+    try {
+      const res = await axios.post(`${url}/auth/signup`, data);
+      if (res.status === 201) {
+        localStorage.setItem("token", `Bearer ${res.data.token}`);
+        return true;
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 400) {
+        return { success: false, errors: error.response.data.errors };
+      }
+      return { success: false, message: "Something went wrong" };
     }
   },
+  
   signIn: async (data: SingInData) => {
     const res = await axios.post(`${url}/auth/login`, data);
     if (res.status === 200) {
@@ -238,7 +247,7 @@ const httpRequestService = {
       return res.data;
     }
   },
-getPostsFromProfile: async (id: string) => {
+  getPostsFromProfile: async (id: string) => {
   try {
     const res = await axios.get(`${url}/post/by_user/${id}`, {
       headers: {
@@ -258,7 +267,7 @@ getPostsFromProfile: async (id: string) => {
     console.error("Error al obtener los posts:", error);
     throw error; // Solo propagas otros errores que no sean 404
   }
-},
+  },
   isLogged: async () => {
     const res = await axios.get(`${url}/user/me`, {
       headers: {
