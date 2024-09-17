@@ -50,8 +50,27 @@ export const useDeleteProfile = () => {
     mutationFn: async () => await service.deleteProfile(),
   });
 }
+export const useGetRecommendedUsers = (limit: number, skip: number) => {
+  const service = useService();
 
-/// Follow Unfollow
+  const { data } = useQuery<User[]>({
+    queryKey: ["recommendedUsers"],
+    queryFn: async () => await service.getRecommendedUsers(limit, skip),
+  });
+  return { data };
+}
+export const useGetSearchUsers = (username: string, limit: number, skip: number) => {
+  const service = useService();
+
+  const { data } = useQuery<User[]>({
+    queryKey: ["searchUsers", username],
+    queryFn: async () => await service.searchUsers(username, limit, skip),
+  });
+  return { data };
+}
+
+
+/// Follow - Unfollow
 export const useFollowUser = () => {
   const service = useService();
 
@@ -60,7 +79,6 @@ export const useFollowUser = () => {
     mutationFn: async ({userId}:{userId: string}) => await service.followUser(userId)
   })
 }
-
 export const useUnfollowUser = () => {
   const service = useService();
 
@@ -71,7 +89,6 @@ export const useUnfollowUser = () => {
 };
 
 /// Posts
-
 export const useCreatePost = () => {
     const service = useService();
     
@@ -80,11 +97,11 @@ export const useCreatePost = () => {
             await service.createPost(data),
     });
 };
-export const useCommentPost = () => {
+export const useDeletePost = () => {
   const service = useService();
 
   return useMutation({
-    mutationFn: async (commentData: PostData) => await service.commentPost(commentData),
+    mutationFn: async (id: string) => await service.deletePost(id),
   });
 };
 export const useGetPaginatedPosts = (limit: number, after: string, query: string) => {
@@ -98,7 +115,6 @@ export const useGetPaginatedPosts = (limit: number, after: string, query: string
     });
     return { data, error, isLoading };
 }
-
 export const useGetPostById = (id: string) => {
   const service = useService();
 
@@ -110,3 +126,60 @@ export const useGetPostById = (id: string) => {
   });
   return { data, error, isLoading };
 };
+export const useGetPaginatedPostsFromProfile = (limit: number, after: string, id: string) => {
+  const service = useService();
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["profilePosts", after, id],
+    queryFn: async () => await service.getPaginatedPostsFromProfile(limit, after, id),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  return { data, error, isLoading };
+}
+export const useGetPostFromProfile = (id: string) => {
+  const service = useService();
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["profilePosts", id],
+    queryFn: async () => await service.getPostsFromProfile(id),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  return { data, error, isLoading };
+}
+/// Comments
+export const useCommentPost = () => {
+  const service = useService();
+  return useMutation({
+    mutationFn: async (commentData: PostData) => await service.commentPost(commentData),
+  });
+};
+export const useGetCommentByPostId = (postId: string) => {
+  const service = useService();
+
+  const { data, error } = useQuery({
+    queryKey: ["comments", postId],
+    queryFn: async () => await service.getCommentsByPostId(postId),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  return { data, error };
+}
+/// Reaction
+export const useCreateReaction = () => {
+  const service = useService();
+
+  return useMutation({
+    mutationKey: ['reaction'],
+    mutationFn: async ({ postId, type}: { postId: string, type: string}) => await service.createReaction(postId, type),
+  });
+};
+export const useDeleteReaction = () => {
+  const service = useService();
+
+  return useMutation({
+    mutationKey: ['reaction'],
+    mutationFn: async ({ postId, type }: { postId: string, type: string }) => await service.deleteReaction(postId, type),
+  });
+}

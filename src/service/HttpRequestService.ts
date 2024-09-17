@@ -134,16 +134,29 @@ const httpRequestService = {
       return res.data;
     }
   },
-  deleteReaction: async (reactionId: string) => {
-    const res = await axios.delete(`${url}/reaction/${reactionId}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
-    if (res.status === 200) {
-      return res.data;
+  deleteReaction: async (postId: string, type: string) => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const res = await axios.delete(`${url}/reaction/${postId}`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+        data: {
+          type,
+          userId,
+        },
+      });
+      
+      if (res.status === 204) {
+        console.log('Reaction deleted successfully');
+        return true;
+      }
+    } catch (error) {
+      console.error('Error deleting reaction:', error);
+      return false; 
     }
   },
+  
   followUser: async (userId: string) => {
     console.log('********************')
     const res = await axios.post(
@@ -360,7 +373,7 @@ getPostsFromProfile: async (id: string) => {
     }
   },
   getCommentsByPostId: async (id: string) => {
-    const res = await axios.get(`${url}/post/comment/by_post/${id}`, {
+    const res = await axios.get(`${url}/comment/by_postId/${id}`, {
       headers: {
         Authorization: localStorage.getItem("token"),
       },
