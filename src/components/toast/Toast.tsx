@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import { StyledToastContainer } from "./ToastContainer";
-import { AlertIcon } from "../icon/Icon";
+import { AlertIcon, SuccessIcon } from "../icon/Icon";
 
 export enum ToastType {
   ALERT = "ALERT",
+  SUCCESS = 'SUCCESS',
+
 }
 
-interface ToastProps {
+export interface ToastProps {
   message: string;
   type: ToastType;
   show?: boolean;
 }
 
-const Toast = ({ message, type, show }: ToastProps) => {
+export const Toast = ({ message, type, show }: ToastProps) => {
   const [isShown, setIsShown] = useState<boolean>(show ?? true);
 
   const iconMap = {
     [ToastType.ALERT]: <AlertIcon />,
+    [ToastType.SUCCESS]: <SuccessIcon />,
   };
 
   const toastIcon = iconMap[type] || null;
@@ -33,4 +36,3 @@ const Toast = ({ message, type, show }: ToastProps) => {
   );
 };
 
-export default Toast;

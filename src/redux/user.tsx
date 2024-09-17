@@ -8,6 +8,9 @@ type InitalStateType = {
   length: number;
   currentChat?: ChatDTO;
   user: User;
+  /// 
+  lastPost: string;
+
 };
 
 const initialState: InitalStateType = {
@@ -23,6 +26,7 @@ const initialState: InitalStateType = {
     followers: [],
     posts: [],
   },
+  lastPost: '',
 };
 
 const userSlice = createSlice({
@@ -51,10 +55,13 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
     },
+    setLastPost: (state, action) => {
+      state.lastPost = action.payload;
+    },
   },
 });
 
-export const {updateFeed, setLength, setQuery, setChat, addMessage, setUser} =
+export const {updateFeed, setLength, setLastPost ,setQuery, setChat, addMessage, setUser} =
     userSlice.actions;
 
 export default userSlice.reducer;

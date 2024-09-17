@@ -5,7 +5,6 @@ import Modal from "../../components/modal/Modal";
 import { useTranslation } from "react-i18next";
 import { Author, User } from "../../service";
 import { ButtonType } from "../../components/button/StyledButton";
-import { useHttpRequestService } from "../../service/HttpRequestService";
 import Button from "../../components/button/Button";
 import ProfileFeed from "../../components/feed/ProfileFeed";
 import { StyledContainer } from "../../components/common/Container";
@@ -30,26 +29,22 @@ const ProfilePage = () => {
     buttonText: "",
   });
 
-  const service = useHttpRequestService();
-
   const user = useGetMe();
-  const { mutateAsync: followUser } = useFollowUser();
-  const { mutateAsync: unfollowUser } = useUnfollowUser();
-  const { mutateAsync: deleteProfile } = useDeleteProfile();
   const id = useParams().id;
   const { data } = useGetProfile(id!);
-
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
   const { t } = useTranslation();
 
+  /// Query hooks
+  const { mutateAsync: deleteProfile } = useDeleteProfile();
+  const { mutateAsync: unfollowUser } = useUnfollowUser();
+  const { mutateAsync: followUser } = useFollowUser();
+  
   const handleButtonType = (): { component: ButtonType; text: string } => {
-    if (profile?.id === user?.id)
-      return { component: ButtonType.DELETE, text: t("buttons.delete") };
-    if (following)
-      return { component: ButtonType.OUTLINED, text: t("buttons.unfollow") };
-    else return { component: ButtonType.FOLLOW, text: t("buttons.follow") };
+    if (profile?.id === user?.id) return { component: ButtonType.DELETE, text: t("buttons.delete") };
+    if (following) return { component: ButtonType.OUTLINED, text: t("buttons.unfollow") };
+    return { component: ButtonType.FOLLOW, text: t("buttons.follow") };
   };
 
   const handleSubmit = async () => {
@@ -78,11 +73,6 @@ const ProfilePage = () => {
     }
   };
 
-  useEffect(() => {
-    getProfileData();
-  }, [id, data]);
-
-  if (!id) return null;
 
   const handleButtonAction = async () => {
     if (profile?.id === user?.id) {
@@ -137,6 +127,12 @@ const ProfilePage = () => {
       else setFollowing(false);
     }
   };
+
+  useEffect(() => {
+    getProfileData();
+  }, [id, data, setFollowing]);
+
+  if (!id) return null;
 
   return (
     <>

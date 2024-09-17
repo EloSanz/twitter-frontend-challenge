@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { PostData, SingInData, SingUpData, User } from "./index";
 import { useService } from "./HttpRequestService";
-// my custom query hooks
+/// my custom query hooks
 
+/// Auth
 export const useSignUp = () => {
   const service = useService();
 
@@ -21,6 +22,7 @@ export const useSignIn = () => {
   });
 };
 
+/// User
 export const useMe = () => {
   const service = useService();
 
@@ -32,7 +34,6 @@ export const useMe = () => {
   });
   return { data, error };
 };
-
 export const useGetProfile = (id: string) => {
   const service = useService();
   const { data } = useQuery<User>({
@@ -69,6 +70,8 @@ export const useUnfollowUser = () => {
   });
 };
 
+/// Posts
+
 export const useCreatePost = () => {
     const service = useService();
     
@@ -77,7 +80,13 @@ export const useCreatePost = () => {
             await service.createPost(data),
     });
 };
+export const useCommentPost = () => {
+  const service = useService();
 
+  return useMutation({
+    mutationFn: async (commentData: PostData) => await service.commentPost(commentData),
+  });
+};
 export const useGetPaginatedPosts = (limit: number, after: string, query: string) => {
     const service = useService();
     

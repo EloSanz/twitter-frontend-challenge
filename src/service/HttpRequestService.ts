@@ -50,6 +50,18 @@ const httpRequestService = {
       return res.data;
     }
   },
+  commentPost: async (data: PostData) => {
+  
+    const res = await axios.post(`${url}/comment/${data.parentId}`, {
+      postId: data.parentId,
+      content: data.content, 
+    });
+  
+    if (res.status === 201) {
+      const comment = res.data.comment;
+      return comment;
+    }
+  },
   getPaginatedPosts: async (limit: number, after: string, query: string) => {
     const res = await axios.get(`${url}/post/${query}`, {
       headers: {

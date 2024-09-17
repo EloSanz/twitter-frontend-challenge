@@ -3,12 +3,13 @@ import {
     StyledLogoutPrompt,
     StyledProfileLogoutPromptContainer
 } from "./StyledProfileLogoutPromptContainer";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import icon from "../../assets/icon.jpg";
 import {StyledP} from "../common/text";
 import {StyledContainer} from "../common/Container";
-import {useHttpRequestService} from "../../service/HttpRequestService";
-import {User} from "../../service";
+import { useGetMe } from "../../redux/hooks";
+import { User } from "../../service";
+import { useOutsideClick } from "../../hooks/useOutsideClick";
 
 
 interface ProfileLogoutPromptProps {
@@ -18,19 +19,14 @@ interface ProfileLogoutPromptProps {
 
 const ProfileLogoutPrompt = ({margin, direction}: ProfileLogoutPromptProps) => {
     const [logoutOpen, setLogoutOpen] = useState(false);
-    const service = useHttpRequestService()
-    const [user, setUser] = useState<User>()
+    const user: User = useGetMe();
 
-
-    useEffect(() => {
-        handleGetUser().then(r => setUser(r))
-    }, []);
-
-    const handleGetUser = async () => {
-        return await service.me()
-    }
-
-
+    const closeLogout = () => {
+        setLogoutOpen(false);
+      };
+    
+    const ref = useOutsideClick(closeLogout);
+    
     const handleLogout = () => {
         setLogoutOpen(!logoutOpen);
     };
@@ -47,6 +43,7 @@ const ProfileLogoutPrompt = ({margin, direction}: ProfileLogoutPromptProps) => {
             className={'profile-info'}
             alignItems={'center'}
             gap={'8px'}
+            ref={ref}
             onClick={handleLogout}
             cursor={'pointer'}
         >
