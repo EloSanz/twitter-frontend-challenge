@@ -81,7 +81,7 @@ const SignInPage = () => {
               required
               placeholder={'Enter user...'}
               title={t('input-params.username')}
-              error={!!formErrors?.username}
+              error={formErrors?.username}
               onChange={formik.handleChange}
               value={formik.values.username}
               id="username"
@@ -91,7 +91,7 @@ const SignInPage = () => {
               required
               placeholder={'Enter password...'}
               title={t('input-params.password')}
-              error={!!formErrors?.password}
+              error={formErrors?.password}
               onChange={formik.handleChange}
               value={formik.values.password}
               id="password"

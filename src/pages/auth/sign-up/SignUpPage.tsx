@@ -33,25 +33,25 @@ const SignUpPage = () => {
       confirmPassword: '',
     },
     validate: (values) => {
-      const errors: Partial<SignUpData> = {};
+      const errors: Partial<Record<keyof SignUpData, string>> = {};
       if (!values.email) {
-        errors.email = t('error.formError.requiredEmail');
+        errors.email = t('Email is required');
       } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-        errors.email = t('error.formError.invalidEmail');
+        errors.email = t('invalid Email, must be example@email.com');
       }
       if (!values.name) {
-        errors.name = t('error.formError.requiredName');
+        errors.name = t('Name is required');
       }
       if (!values.username) {
-        errors.username = t('error.formError.requiredUsername');
+        errors.username = t('Username is required');
       }
       if (!values.password) {
-        errors.password = t('error.formError.requiredPassword');
+        errors.password = t('Password is required');
       }
       if (!values.confirmPassword) {
-        errors.confirmPassword = t('error.formError.confirmRequired');
+        errors.confirmPassword = t('confirm password Required');
       } else if (values.confirmPassword !== values.password) {
-        errors.confirmPassword = t('error.formError.differentPass');
+        errors.confirmPassword = t('Different passwords');
       }
       return errors;
     },
@@ -66,82 +66,82 @@ const SignUpPage = () => {
 
   return (
     <AuthWrapper>
-      <div className="border">
-        <div className="container">
-          <div className="header">
-            <img src={logo} alt="Twitter Logo" />
-            <StyledH3>{t('title.register')}</StyledH3>
-          </div>
-          <form onSubmit={formik.handleSubmit}>
-            <div className="input-container">
-              <LabeledInput
-                required
-                placeholder="Enter name..."
-                title={t('input-params.name')}
-                error={!!formik.errors.name}
-                onChange={formik.handleChange}
-                value={formik.values.name}
-                id="name"
-              />
-              <LabeledInput
-                required
-                placeholder="Enter username..."
-                title={t('input-params.username')}
-                error={!!formik.errors.username}
-                onChange={formik.handleChange}
-                value={formik.values.username}
-                id="username"
-              />
-              <LabeledInput
-                required
-                placeholder="Enter email..."
-                title={t('input-params.email')}
-                error={!!formik.errors.email}
-                onChange={formik.handleChange}
-                value={formik.values.email}
-                id="email"
-              />
-              <LabeledInput
-                type="password"
-                required
-                placeholder="Enter password..."
-                title={t('input-params.password')}
-                error={!!formik.errors.password}
-                onChange={formik.handleChange}
-                value={formik.values.password}
-                id="password"
-              />
-              <LabeledInput
-                type="password"
-                required
-                placeholder="Confirm password..."
-                title={t('input-params.confirm-password')}
-                error={!!formik.errors.confirmPassword}
-                onChange={formik.handleChange}
-                value={formik.values.confirmPassword}
-                id="confirmPassword"
-              />
-            </div>
-            {error && <p className="error-message">{t('error.register')}</p>}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Button
-                text={t('buttons.register')}
-                buttonType={ButtonType.FOLLOW}
-                size="MEDIUM"
-                onClick={() => formik.handleSubmit()}
-
-              />
-              <Button
-                text={t('buttons.login')}
-                buttonType={ButtonType.OUTLINED}
-                size="MEDIUM"
-                onClick={() => navigate('/sign-in')}
-              />
-            </div>
-          </form>
+    <div className="border">
+      <div className="container">
+        <div className="header">
+          <img src={logo} alt="Twitter Logo" />
+          <StyledH3>{t('title.register')}</StyledH3>
         </div>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="input-container">
+            <LabeledInput
+              required
+              placeholder="Enter name..."
+              title={t('input-params.name')}
+              error={formik.errors.name}
+              onChange={formik.handleChange}
+              value={formik.values.name}
+              id="name"
+            />
+            <LabeledInput
+              required
+              placeholder="Enter username..."
+              title={t('input-params.username')}
+              error={formik.errors.username}
+              onChange={formik.handleChange}
+              value={formik.values.username}
+              id="username"
+            />
+            <LabeledInput
+              required
+              placeholder="Enter email..."
+              title={t('input-params.email')}
+              error={formik.errors.email}
+              onChange={formik.handleChange}
+              value={formik.values.email}
+              id="email"
+            />
+            <LabeledInput
+              type="password"
+              required
+              placeholder="Enter password..."
+              title={t('input-params.password')}
+              error={formik.errors.password}
+              onChange={formik.handleChange}
+              value={formik.values.password}
+              id="password"
+            />
+            <LabeledInput
+              type="password"
+              required
+              placeholder="Confirm password..."
+              title={t('input-params.confirm-password')}
+              error={formik.errors.confirmPassword}
+              onChange={formik.handleChange}
+              value={formik.values.confirmPassword}
+              id="confirmPassword"
+            />
+          </div>
+          {error && <p className="error-message">{t('error.register')}</p>}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <Button
+              text={t('buttons.register')}
+              buttonType={ButtonType.FOLLOW}
+              size="MEDIUM"
+              onClick={() => formik.handleSubmit()}
+
+            />
+            <Button
+              text={t('buttons.login')}
+              buttonType={ButtonType.OUTLINED}
+              size="MEDIUM"
+              onClick={() => navigate('/sign-in')}
+            />
+          </div>
+        </form>
       </div>
-    </AuthWrapper>
+    </div>
+  </AuthWrapper>
   );
 };
 

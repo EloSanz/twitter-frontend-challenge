@@ -10,7 +10,7 @@ interface InputWithLabelProps {
   placeholder: string;
   required: boolean;
   id: string;
-  error?: boolean;
+  error?: string;
   value: string; // add 
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }

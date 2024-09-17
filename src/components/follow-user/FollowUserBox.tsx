@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import Button from "../button/Button";
 import { useHttpRequestService } from "../../service/HttpRequestService";
 import UserDataBox from "../user-data-box/UserDataBox";
 import { useTranslation } from "react-i18next";
 import { ButtonType } from "../button/StyledButton";
-import "./FollowUserBox.css";
 import { Author, User } from "../../service";
+import { BoxContainer } from './FollowUserBoxStyled';
 
 interface FollowUserBoxProps {
   profilePicture?: string;
@@ -61,7 +61,7 @@ const FollowUserBox = ({
   };
 
   return (
-    <div className="box-container">
+    <BoxContainer>
       <UserDataBox
         id={id}
         name={name!}
@@ -74,7 +74,7 @@ const FollowUserBox = ({
         size={"SMALL"}
         onClick={handleFollow}
       />
-    </div>
+    </BoxContainer>
   );
 };
 
