@@ -1,11 +1,15 @@
-import  { useEffect, useState } from "react";
+import  { useContext, useEffect, useState } from "react";
 import Button from "../button/Button";
-import { useHttpRequestService } from "../../service/HttpRequestService";
 import UserDataBox from "../user-data-box/UserDataBox";
 import { useTranslation } from "react-i18next";
 import { ButtonType } from "../button/StyledButton";
-import { Author, User } from "../../service";
-import { BoxContainer } from './FollowUserBoxStyled';
+import { useGetMe } from "../../redux/hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { useFollowUser, useUnfollowUser } from "../../service/queryHooks";
+import { ToastContext } from "../toast/FallbackToast";
+import { Author } from "../../service";
+import { BoxContainer } from "./FollowUserBoxStyled";
+import { ToastType } from "../toast/Toast";
 
 interface FollowUserBoxProps {
   profilePicture?: string;
@@ -19,62 +23,79 @@ const FollowUserBox = ({
   name,
   username,
   id,
-}: FollowUserBoxProps) => {
-  const { t } = useTranslation();
-  const service = useHttpRequestService();
-  const [user, setUser] = useState<User>();
-  const [isFollowing, setIsFollowing] = useState(false);
+}: FollowUserBoxProps) => {  const { t } = useTranslation();
+const { mutateAsync: followUser } = useFollowUser();
+const { mutateAsync: unfollowUser } = useUnfollowUser();
+const [isFollowing, setIsFollowing] = useState(false);
+const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const r = await handleGetUser();
-        setUser(r);
+const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-        setIsFollowing(
-          r.following && r.following.some((f: Author) => f.id === id)
-        );
-      } catch (error) {
-        console.error("Error fetching user:", error);
+
+const user = useGetMe();
+const queryClient = useQueryClient();
+const Toast = useContext(ToastContext);
+
+useEffect(() => {
+  setIsFollowing(user?.following.some((author: Author) => author.id === id));
+}, []);
+
+const handleFollow = async () => {
+  if (isFollowing) {
+    await unfollowUser(
+      { userId: id },
+      {
+        onError: (e: Error) => {
+          setError(e);
+        },
+        onSuccess: async () => {
+          setIsFollowing(false);
+          setSuccessMessage(t('Unfollow success'));
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ['user'] }),
+            queryClient.invalidateQueries({ queryKey: ['posts'] }),
+          ]);
+        },
       }
-    };
-
-    fetchUser();
-  }, [id]);
-
-  const handleGetUser = async () => {
-    const me = await service.me();
-    return me;
-  };
-
-  const handleFollow = async () => {
-    try {
-      if (isFollowing) {
-        await service.unfollowUser(id);
-      } else {
-        await service.followUser(id);
+    );
+  } else {
+    await followUser(
+      { userId: id },
+      {
+        onError: (e) => {
+          setError(e);
+        },
+        onSuccess: async () => {
+          setIsFollowing(true);
+          setSuccessMessage(t('Follow success'));
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ['user'] }),
+            queryClient.invalidateQueries({ queryKey: ['posts'] }),
+          ]);
+        },
       }
-      setIsFollowing(!isFollowing);
-    } catch (error) {
-      console.error("Error during follow/unfollow:", error);
-    }
-  };
+    );
+  }
+};
 
   return (
-    <BoxContainer>
-      <UserDataBox
-        id={id}
-        name={name!}
-        profilePicture={profilePicture!}
-        username={username!}
-      />
-      <Button
-        text={isFollowing ? t("buttons.unfollow") : t("buttons.follow")}
-        buttonType={isFollowing ? ButtonType.DELETE : ButtonType.FOLLOW}
-        size={"SMALL"}
-        onClick={handleFollow}
-      />
-    </BoxContainer>
+    <>
+      {Toast && successMessage && (
+        <Toast.Toast message={successMessage} type={ToastType.SUCCESS} show={true} />
+      )}
+      {Toast && error && <Toast.FallbackToast error={error}></Toast.FallbackToast>}
+      {!error  && !isFollowing && (
+        <BoxContainer>
+          <UserDataBox id={id} name={name!} profilePicture={profilePicture!} username={username!} />
+          <Button
+            text={isFollowing ? t('buttons.unfollow') : t('buttons.follow')}
+            buttonType={isFollowing ? ButtonType.DELETE : ButtonType.FOLLOW}
+            size={'SMALL'}
+            onClick={handleFollow}
+          />
+        </BoxContainer>
+      )}
+    </>
   );
 };
 

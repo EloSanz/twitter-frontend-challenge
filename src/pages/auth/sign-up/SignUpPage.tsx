@@ -23,6 +23,7 @@ const SignUpPage = () => {
   const { mutate } = useSignUp();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  
 
   const formik = useFormik({
     initialValues: {
@@ -63,7 +64,7 @@ const SignUpPage = () => {
       });
     },
   });
-
+  
   return (
     <AuthWrapper>
     <div className="border">
@@ -122,7 +123,7 @@ const SignUpPage = () => {
               id="confirmPassword"
             />
           </div>
-          {error && <p className="error-message">{t('error.register')}</p>}
+          {error && <p className="error-message">{t('Password must be strong. (StrongPassword123@)')}</p>}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Button
               text={t('buttons.register')}

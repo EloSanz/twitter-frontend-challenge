@@ -22,18 +22,11 @@ const url =
 const httpRequestService = {
 
   signUp: async (data: Partial<SingUpData>) => {
-    try {
       const res = await axios.post(`${url}/auth/signup`, data);
       if (res.status === 201) {
         localStorage.setItem("token", `Bearer ${res.data.token}`);
-        return true;
+        return true
       }
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 400) {
-        return { success: false, errors: error.response.data.errors };
-      }
-      return { success: false, message: "Something went wrong" };
-    }
   },
   
   signIn: async (data: SingInData) => {

@@ -42,7 +42,7 @@ export const useGetProfile = (id: string) => {
   });
 
   return { data };
-}
+};
 export const useDeleteProfile = () => {
   const service = useService();
 
@@ -140,13 +140,13 @@ export const useGetPaginatedPostsFromProfile = (limit: number, after: string, id
 export const useGetPostFromProfile = (id: string) => {
   const service = useService();
 
-  const { data, error, isLoading } = useQuery({
+  const { data, isError, isLoading } = useQuery({
     queryKey: ["profilePosts", id],
     queryFn: async () => await service.getPostsFromProfile(id),
     retry: false,
     refetchOnWindowFocus: false,
   });
-  return { data, error, isLoading };
+  return { data, isError, isLoading };
 }
 /// Comments
 export const useCommentPost = () => {

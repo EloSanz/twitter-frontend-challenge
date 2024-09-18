@@ -32,6 +32,8 @@ const ProfilePage = () => {
   const user = useGetMe();
   const id = useParams().id;
   const { data } = useGetProfile(id!);
+  
+  
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -117,22 +119,21 @@ const ProfilePage = () => {
   };
 
   const getProfileData = async () => {
-    if (data === undefined) return;
-    setProfile(data);
-    if (user) {
-      const isFollowing = data.followers?.find(
-        (follower: Author) => follower.id === user.id
-      );
-      if (isFollowing) setFollowing(true);
-      else setFollowing(false);
+    if (data) {
+      setProfile(data);
+      if (user) {
+        const isFollowing = data.followers?.find(
+          (follower: Author) => follower.id === user.id
+        );
+        setFollowing(!!isFollowing);
+      }
     }
   };
 
   useEffect(() => {
     getProfileData();
-  }, [id, data, setFollowing]);
+  }, [id, data]);
 
-  if (!id) return null;
 
   return (
     <>
