@@ -12,7 +12,7 @@ axios.interceptors.request.use(
   }
 )
 const url =
-  process.env.REACT_APP_API_URL || "http://localhost:8080";
+  process.env.REACT_APP_API_URL || "http://localhost:8081/api";
 
   export const useService = () => {
     const service = useHttpRequestService();
@@ -123,6 +123,7 @@ const httpRequestService = {
     }
   },
   createReaction: async (postId: string, reaction: string) => {
+    console.log('sending reaction')
     const res = await axios.post(
       `${url}/reaction/${postId}`,
       { type: reaction },
@@ -294,8 +295,8 @@ const httpRequestService = {
     }
   },
 
-  getChats: async () => {
-    const res = await axios.get(`${url}/chat`, {
+  getChats: async (id: string) => {
+    const res = await axios.get(`${url}/chat/${id}`, {
       headers: {
         Authorization: localStorage.getItem("token"),
       },

@@ -13,6 +13,8 @@ import PostPage from "../../pages/post-page/PostPage";
 import { setUser } from "../../redux/user";
 import { useAppDispatch } from "../../redux/hooks";
 import { useMe } from "../../service/queryHooks";
+import ChatBox from "../chat/ChatBox";
+import Chat from "../chat/Chat";
 
 const WithNav = () => {
   const [isLogged, setIsLogged] = useState<boolean>(false);
@@ -80,6 +82,14 @@ export const ROUTER = createBrowserRouter([
         path: "/post/:id",
         element: <CommentPage />,
       },
+      {
+        path: "/chats/:id",
+        element: <ChatBox />,
+      },
+      {
+        path: "/chat/:chatId",
+        element: <Chat/>,
+      }
     ],
   },
 ]);

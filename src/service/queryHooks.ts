@@ -1,6 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import type { PostData, SingInData, SingUpData, User } from "./index";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { ChatDTO, PostData, SingInData, SingUpData, User } from "./index";
 import { useService } from "./HttpRequestService";
+import { use } from "i18next";
 /// my custom query hooks
 
 /// Auth
@@ -183,3 +184,29 @@ export const useDeleteReaction = () => {
     mutationFn: async ({ postId, type }: { postId: string, type: string }) => await service.deleteReaction(postId, type),
   });
 }
+
+/// Chat
+export const useGetChats = (id: string) => {
+  const service = useService();
+
+  const data = useQuery<ChatDTO[]>({
+    queryKey: ["chats", id],
+    queryFn: async () => await service.getChat(id),
+  });
+
+  return data ;
+}
+export const useGetChatById = (id: string) => {
+  const queryClient = useQueryClient();
+  const userId = useMe().data?.id;
+  const cachedChats = queryClient.getQueryData<ChatDTO[]>(["chats", userId]);
+  console.log(cachedChats)
+  const chat = cachedChats?.find((chat) => chat.id === id);
+
+  return {
+    data: chat,
+    isLoading: !chat,
+    isError: false,
+    isSuccess: !!chat, 
+  };
+};

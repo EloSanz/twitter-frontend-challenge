@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useState} from "react";
 import {StyledTweetContainer} from "./TweetContainer";
 import AuthorData from "./user-post-data/AuthorData";
 import type {Post, User} from "../../service";
@@ -12,6 +12,7 @@ import DeletePostModal from "./delete-post-modal/DeletePostModal";
 import ImageContainer from "./tweet-image/ImageContainer";
 import CommentModal from "../comment/comment-modal/CommentModal";
 import {useNavigate} from "react-router-dom";
+import { useGetMe } from "../../redux/hooks";
 
 interface TweetProps {
   post: Post;
@@ -23,21 +24,14 @@ const Tweet = ({post}: TweetProps) => {
   const [showCommentModal, setShowCommentModal] = useState<boolean>(false);
   const service = useHttpRequestService();
   const navigate = useNavigate();
-  const [user, setUser] = useState<User>()
-
-  useEffect(() => {
-    handleGetUser().then(r => setUser(r))
-  }, []);
-
-  const handleGetUser = async () => {
-    return await service.me()
-  }
+  const user: User = useGetMe();
 
   const getCountByType = (type: string): number => {
     return actualPost?.reactions?.filter((r) => r.type === type).length ?? 0;
   };
 
   const handleReaction = async (type: string) => {
+    console.log(actualPost)
     const reacted = actualPost.reactions.find(
         (r) => r.type === type && r.userId === user?.id
     );
