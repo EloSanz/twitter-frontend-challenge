@@ -44,6 +44,26 @@ export const useGetProfile = (id: string) => {
 
   return { data };
 };
+export const useGetProfileView = (id: string) => {
+  const service = useService();
+  const { data } = useQuery<User>({
+    queryKey: ['userView', id],
+    queryFn: async () => await service.getProfileView(id),
+  });
+
+  return data ;
+}
+
+export const useGetProfilePicture = (id: string) => { /// completar
+  const service = useService();
+  const { data } = useQuery<File>({
+    queryKey: ['profilePicture', id],
+    queryFn: async () => await service.getProfilePicture(id),
+  });
+
+  return data;
+}
+
 export const useDeleteProfile = () => {
   const service = useService();
 

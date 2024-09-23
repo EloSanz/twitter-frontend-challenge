@@ -271,8 +271,8 @@ const httpRequestService = {
     return res.status === 200;
   },
 
-  getProfileView: async (id: string) => {
-    const res = await axios.get(`${url}/user/${id}`, {
+  getProfileView: async (userId: string) => {
+    const res = await axios.get(`${url}/user/author/${userId}`, {
       headers: {
         Authorization: localStorage.getItem("token"),
       },
@@ -282,6 +282,18 @@ const httpRequestService = {
       return res.data;
     }
   },
+  getProfilePicture: async (userId: string) => {
+    const res = await axios.get(`${url}/user/profile-picture/${userId}`, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    });
+
+    if (res.status === 200) {
+      return res.data;
+    }
+  },
+
 
   deleteProfile: async () => {
     const res = await axios.delete(`${url}/user/me`, {
